@@ -232,13 +232,115 @@ Descripción:
 # call consulta:
 ![image](https://github.com/user-attachments/assets/5e627100-e0b3-4dba-b7fb-eeb4da9eb47c)
 ## Triggers nuevos 
+* descripción de cada **trigger** y su uso:
 
+1. **Trigger: `after_cliente_insert`**  
+   **Descripción**: Este trigger se activa automáticamente **después de que un nuevo cliente es insertado** en la tabla `Clientes`.  
+   **Uso**: Su propósito es registrar en la tabla `LogsClientes` la operación de inserción, creando un log que almacena el `id_cliente` recién agregado y la operación `'INSERT'`. Esto permite rastrear las inserciones de clientes.
 
+   **Script**:  
+   ```SQL
+   INSERT INTO LogsClientes (id_cliente, operacion)
+   VALUES (NEW.id_cliente, 'INSERT');
+   ```
 
+2. **Trigger: `after_cliente_update`**  
+   **Descripción**: Este trigger se ejecuta **después de que un cliente es actualizado** en la tabla `Clientes`.  
+   **Uso**: Se utiliza para registrar actualizaciones en la tabla `LogsClientes`. Cada vez que un cliente es actualizado, se guarda un log con el `id_cliente` y la operación `'UPDATE'` en la tabla de logs. Esto permite rastrear qué clientes han sido modificados.
 
+   **Script**:  
+   ```SQL
+   INSERT INTO LogsClientes (id_cliente, operacion)
+   VALUES (NEW.id_cliente, 'UPDATE');
+   ```
+
+3. **Trigger: `after_cliente_delete`**  
+   **Descripción**: Este trigger se activa **después de que un cliente es eliminado** de la tabla `Clientes`.  
+   **Uso**: Registra en la tabla `LogsClientes` la operación de eliminación. Cuando se elimina un cliente, el `id_cliente` eliminado y la operación `'DELETE'` se registran en los logs, lo que facilita el seguimiento de eliminaciones.
+
+   **Script**:  
+   ```SQL
+   INSERT INTO LogsClientes (id_cliente, operacion)
+   VALUES (OLD.id_cliente, 'DELETE');
+   ```
+
+4. **Trigger: `before_pago_insert`**  
+   **Descripción**: Este trigger se ejecuta **antes de insertar un nuevo pago** en la tabla `Pagos`.  
+   **Uso**: Su función es **validar** que el monto del pago no sea negativo. Si el valor del pago (`monto`) es menor que 0, el trigger lanza un error mediante la instrucción `SIGNAL`, deteniendo la inserción y mostrando un mensaje de error. Esto asegura la integridad de los datos al evitar pagos inválidos.
+
+   **Script**:  
+   ```SQL
+   IF NEW.monto < 0 THEN
+       SIGNAL SQLSTATE '40000'
+       SET MESSAGE_TEXT = 'El pago no tiene que ser un valor negativo';
+   END IF;
+   ```
+
+# ROLES
+## Descripcion de Roles creados
+### 1. **ROL: Gerencia**
+   - **Descripción**: Este rol tiene **todos los privilegios** sobre la base de datos `proyecto_gimnasio`.
+   - **Uso**: El rol `Gerencia` tiene control total, lo que incluye crear, modificar, eliminar tablas, vistas, procedimientos almacenados, funciones y manipular datos. Los usuarios con este rol pueden realizar cualquier operación en la base de datos sin restricciones.
+
+   ```sql
+   GRANT ALL PRIVILEGES ON proyecto_gimnasio TO 'Gerencia';
+   ```
+
+### 2. **ROL: Administración**
+   - **Descripción**: Este rol tiene permisos **DML** (Data Manipulation Language) sobre ciertas tablas, permisos para ejecutar funciones y procedimientos específicos, y permisos de selección sobre varias vistas.
+   - **Uso**:
+     - **Permisos sobre tablas**: Los usuarios con este rol pueden **seleccionar, insertar, actualizar y eliminar** datos en las tablas `clases`, `clientes`, `pagos` y `reservas`. Este rol está diseñado para administrar las operaciones cotidianas relacionadas con la gestión de clientes y pagos.
+     - **Permisos para funciones y procedimientos**: Pueden ejecutar dos funciones (`calcularTotalPagado` y `obtenerNombreCompletoCliente`) y dos procedimientos almacenados (`RegistrarCliente` y `verCliente`). Estas funciones y procedimientos permiten obtener información clave y gestionar clientes.
+     - **Permisos sobre vistas**: Tienen acceso de solo lectura a cuatro vistas (`vista_clases_horarios`, `vista_reservas`, `vista_clientes_rutinas` y `vista_feedback`), que proporcionan resúmenes importantes de datos.
+
+   ```sql
+   GRANT SELECT, INSERT, UPDATE, DELETE ON proyecto_gimnasio.clases TO 'Administracion';
+   GRANT SELECT, INSERT, UPDATE, DELETE ON proyecto_gimnasio.clientes TO 'Administracion';
+   GRANT SELECT, INSERT, UPDATE, DELETE ON proyecto_gimnasio.pagos TO 'Administracion';
+   GRANT SELECT, INSERT, UPDATE, DELETE ON proyecto_gimnasio.reservas TO 'Administracion';
+
+   GRANT EXECUTE ON FUNCTION proyecto_gimnasio.calcularTotalPagado TO 'Administracion';
+   GRANT EXECUTE ON FUNCTION proyecto_gimnasio.obtenerNombreCompletoCliente TO 'Administracion';
+   GRANT EXECUTE ON PROCEDURE proyecto_gimnasio.RegistrarCliente TO 'Administracion';
+   GRANT EXECUTE ON PROCEDURE proyecto_gimnasio.verCliente TO 'Administracion';
+
+   GRANT SELECT ON proyecto_gimnasio.vista_clases_horarios TO 'Administracion';
+   GRANT SELECT ON proyecto_gimnasio.vista_reservas TO 'Administracion';
+   GRANT SELECT ON proyecto_gimnasio.vista_clientes_rutinas TO 'Administracion';
+   GRANT SELECT ON proyecto_gimnasio.vista_feedback TO 'Administracion';
+   ```
+
+### 3. **ROL: Empleados**
+   - **Descripción**: Este rol tiene permisos **DML** para gestionar datos sobre entrenadores, empleados, equipos, horarios, inscripciones y servicios. Además, pueden ejecutar funciones y procedimientos, y consultar algunas vistas específicas.
+   - **Uso**:
+     - **Permisos sobre tablas**: Los usuarios con este rol pueden **seleccionar, insertar y actualizar** datos en las tablas `entrenadores`, `empleados`, `equipos`, `horarios`, `inscripciones` y `servicios`. Esto les permite administrar los recursos y servicios del gimnasio.
+     - **Permisos para funciones y procedimientos**: Pueden ejecutar la función `calcularTotalPagado` y el procedimiento `RegistrarCliente`, lo que les permite gestionar los pagos y registrar nuevos clientes.
+     - **Permisos sobre vistas**: Tienen acceso de solo lectura a tres vistas (`vista_clases_horarios`, `vista_reservas` y `vista_entrenadores_clases`), que les proporcionan información sobre los horarios de clases, reservas y la asignación de entrenadores a clases.
+
+   ```sql
+   GRANT SELECT, INSERT, UPDATE ON entrenadores TO 'Empleados';
+   GRANT SELECT, INSERT, UPDATE ON empleados TO 'Empleados';
+   GRANT SELECT, INSERT, UPDATE ON equipos TO 'Empleados';
+   GRANT SELECT, INSERT, UPDATE ON horarios TO 'Empleados';
+   GRANT SELECT, INSERT, UPDATE ON inscripciones TO 'Empleados';
+   GRANT SELECT, INSERT, UPDATE ON servicios TO 'Empleados';
+
+   GRANT EXECUTE ON FUNCTION proyecto_gimnasio.calcularTotalPagado TO 'Empleados';
+   GRANT EXECUTE ON PROCEDURE proyecto_gimnasio.RegistrarCliente TO 'Empleados';
+
+   GRANT SELECT ON proyecto_gimnasio.vista_clases_horarios TO 'Empleados';
+   GRANT SELECT ON proyecto_gimnasio.vista_reservas TO 'Empleados';
+   GRANT SELECT ON proyecto_gimnasio.vista_entrenadores_clases TO 'Empleados';
+   ```
+
+### Resumen:
+- **Gerencia**: Control total de la base de datos, todos los permisos.
+- **Administración**: Permisos completos sobre ciertas tablas clave (clases, clientes, pagos, reservas), ejecución de funciones y procedimientos específicos, y acceso a vistas para gestión.
+- **Empleados**: Permisos de gestión para entrenadores, empleados, equipos, horarios, inscripciones y servicios, así como acceso a vistas específicas y funciones/procedimientos necesarios para su labor diaria.
 # la base esta formada con 17 tablas
 * aqui adjunto el diagrama entidad relacion actualizado
-![image](https://github.com/user-attachments/assets/e31f626c-b584-4d2e-9516-0db41abed9bf)
+![image](https://github.com/user-attachments/assets/74e9eb8d-578a-42a7-b44e-b025d1bc402a)
+
 
 
 
