@@ -9,11 +9,61 @@ Profesor: Anderson Ocaña
 
 Tutor: Ariel-annone
 
-## segunda entrega proyecto SQL
-En esta parte del proyecto avance acorde se pedia en los documentos de actividades  
-* Listado de Vistas más una descripción detallada, su objetivo.
-* Listado de Funciones que incluyan una descripción detallada y su objetivo para la cual fueron creadas.
-* Listado de Stored Procedures con una descripción detallada, qué objetivo o beneficio aportan al proyecto.
+## Proyecto Final proyecto SQL
+
+## Explicacion de objetivo de la Base
+# TABLAS y objetivos para lo cual fue creada 
+Cada tabla tiene una tabla tiene una clave primaria (PRIMARY KEY) y las relaciones entre las tablas 
+se establecen mediante claves foreanas (FOREIGN KEY).
+
+## Descripción del Problema de Negocio
+Un gimnasio moderno enfrenta varios desafíos relacionados con la gestión eficiente de sus operaciones diarias. Con un número creciente de clientes, clases, entrenadores y equipos, la administración manual de estos elementos se vuelve cada vez más complicada y propensa a errores. Además, los clientes esperan una experiencia fluida, desde la inscripción hasta la participación en clases y el pago de membresías.
+
+El gimnasio necesita un sistema integral que simplifique y automatice la gestión de clientes, membresías, clases, entrenadores y equipos. Un sistema bien diseñado no solo mejorará la eficiencia operativa sino que también aumentará la satisfacción del cliente al proporcionar una experiencia más organizada y profesional.
+
+
+## Requisitos del Sistema
+### Funcionales
+ # descripción de cada tabla creada:
+
+1. **Clientes**: Almacena los datos personales de los clientes, como su nombre, apellido, fecha de nacimiento, email, teléfono y CUIL (número único de identificación en Argentina). Cada cliente tiene un identificador único (`id_cliente`).
+
+2. **Empleados**: Contiene información sobre los empleados, incluyendo su nombre, apellido, puesto, teléfono y correo electrónico. El identificador único es `id_empleado`.
+
+3. **Membresias**: Almacena los diferentes tipos de membresías disponibles, junto con su precio y duración en meses. El campo `id_membresia` es el identificador único.
+
+4. **Entrenadores**: Guarda los datos de los entrenadores, incluyendo nombre, apellido, especialidad (si aplica) y teléfono. Cada entrenador tiene un identificador único (`id_entrenador`).
+
+5. **Clases**: Contiene información sobre las clases ofrecidas, como su nombre, descripción y el entrenador asignado a la clase. El campo `id_clase` es la clave primaria.
+
+6. **LogsClientes**: Registra las operaciones realizadas por los clientes (como actualizaciones o eliminaciones), junto con la fecha y hora. La clave primaria es `id_log`, y cada registro está relacionado con un cliente específico mediante `id_cliente`.
+
+7. **Inscripciones**: Registra las inscripciones de los clientes en clases, con la fecha de inscripción. Está vinculada tanto a la tabla de `Clientes` como a la de `Clases`.
+
+8. **Pagos**: Almacena los pagos realizados por los clientes, especificando el monto, la fecha y la membresía correspondiente. Está vinculada a las tablas de `Clientes` y `Membresias`.
+
+9. **Equipos**: Contiene la información sobre los equipos utilizados en el gimnasio, incluyendo su nombre, marca, estado y el entrenador responsable. Está relacionada con la tabla de `Entrenadores`.
+
+10. **Rutinas**: Guarda las rutinas asignadas a los clientes por los entrenadores, con una descripción y la fecha de asignación. Está vinculada a las tablas de `Clientes` y `Entrenadores`.
+
+11. **Horarios**: Define los horarios de las clases, indicando el día de la semana y las horas de inicio y fin. Está relacionada con la tabla de `Clases`.
+
+12. **Asistencias**: Registra la asistencia de los clientes a las clases, especificando si estuvieron presentes o no. Está relacionada con las tablas de `Clientes` y `Clases`.
+
+13. **Reservas**: Almacena las reservas que los clientes realizan para asistir a clases, junto con la fecha de reserva y el estado de la misma. Está vinculada a las tablas de `Clientes` y `Clases`.
+
+14. **Servicios**: Contiene los servicios ofrecidos por los empleados a los clientes, con una descripción y un precio. Está vinculada a las tablas de `Empleados` y `Clientes`.
+
+15. **Contrataciones**: Registra las contrataciones de servicios por parte de los clientes, especificando la fecha de contratación. Está relacionada con las tablas de `Clientes` y `Servicios`.
+
+16. **Facturas**: Almacena las facturas emitidas por los pagos realizados, incluyendo la fecha de emisión y el total. Está vinculada a la tabla de `Pagos`.
+
+17. **Feedback**: Registra la calificación y los comentarios de los clientes sobre las clases, con una calificación del 1 al 5. Está vinculada a las tablas de `Clientes` y `Clases`.
+## Beneficios Esperados
+* Mejora en la Eficiencia Operativa: Reducir el tiempo y esfuerzo necesarios para gestionar las operaciones diarias del gimnasio.
+* Incremento en la Satisfacción del Cliente: Proporcionar una experiencia más fluida y profesional a los clientes.
+* Toma de Decisiones Informada: Acceso a datos precisos y actualizados para tomar decisiones estratégicas
+* Reducción de Errores: Minimizar los errores humanos asociados con la gestión manual
 # las vistas
 ![image](https://github.com/user-attachments/assets/40dc3719-3e8a-47d9-9560-f0d6c5c9fc94)
 
@@ -181,8 +231,12 @@ Descripción:
 
 # call consulta:
 ![image](https://github.com/user-attachments/assets/5e627100-e0b3-4dba-b7fb-eeb4da9eb47c)
+## Triggers nuevos 
 
-# A diferencia de la entrega anterior, ahora la base esta formada con 17 tablas
+
+
+
+# la base esta formada con 17 tablas
 * aqui adjunto el diagrama entidad relacion actualizado
 ![image](https://github.com/user-attachments/assets/e31f626c-b584-4d2e-9516-0db41abed9bf)
 
