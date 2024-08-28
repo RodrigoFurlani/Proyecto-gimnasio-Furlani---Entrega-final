@@ -77,7 +77,7 @@ Su objtivo es dar una visión consolidada de los comentarios y calificaciones de
 * Clientes (c)
 * Clases (cl)
 
-# Script de creacin
+# Script de creacion
 ![image](https://github.com/user-attachments/assets/ed6fbcd8-df28-4506-803e-268bfc9b9168)
 
 ## Vista de Reservas
